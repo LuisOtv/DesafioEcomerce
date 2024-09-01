@@ -13,32 +13,33 @@ import com.ecomerce.repositories.ProductRepository;
 public class ProductService {
 
     @Autowired
-    private ProductRepository ProductRepository;
+    private ProductRepository productRepository;
 
     public Product addProduct(Product Product) {
-        return ProductRepository.save(Product);
+        return productRepository.save(Product);
     }
 
     public List<Product> listProducts() {
-        return ProductRepository.findAll();
+        return productRepository.findAll();
     }
 
     public Optional<Product> getProduct(Long id) {
-        return ProductRepository.findById(id);
+        return productRepository.findById(id);
     }
 
     public Product putProduct(Long id, Product ProductAtualizado) {
-        return ProductRepository.findById(id)
+        return productRepository.findById(id)
             .map(Product -> {
                 Product.setNome(ProductAtualizado.getNome());
                 Product.setPreco(ProductAtualizado.getPreco());
-                Product.setEstoque(ProductAtualizado.getEstoque());
                 Product.setStatus(ProductAtualizado.getStatus());
-                return ProductRepository.save(Product);
+                return productRepository.save(Product);
             }).orElseThrow(() -> new RuntimeException("Product não encontrado"));
     }
 
     public void deleteProduct(Long id) {
-        ProductRepository.deleteById(id);
+        productRepository.deleteById(id);
     }
+
+ 
 }

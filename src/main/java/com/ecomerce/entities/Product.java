@@ -18,7 +18,6 @@ public class Product {
     
     private String nome;
     private Double preco;
-    private Integer estoque;
     private String status;
     
 }
