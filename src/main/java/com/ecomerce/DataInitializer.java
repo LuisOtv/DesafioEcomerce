@@ -10,19 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
-import com.ecomerce.entities.User;
-import com.ecomerce.entities.UserRole;
 import com.ecomerce.entities.Sale;
 import com.ecomerce.entities.Product;
 import com.ecomerce.repositories.ProductRepository;
 import com.ecomerce.repositories.SaleRepository;
-import com.ecomerce.repositories.UserRepository;
 
 @Configuration
 public class DataInitializer implements CommandLineRunner {
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -32,26 +26,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        // Criando 3 usuários
-        User u1 = new User();
-        u1.setUsername("Adelaide");
-        u1.setPassword("GatoDePallas");
-        u1.setRole(UserRole.ADMIN);
-
-        User u2 = new User();
-        u2.setUsername("André");
-        u2.setPassword("Marsupial");
-        u1.setRole(UserRole.USER);
-
-
-        User u3 = new User();
-        u3.setUsername("Marcelo");
-        u3.setPassword("Tamandua");
-        u1.setRole(UserRole.USER);
-
-
-        userRepository.saveAll(List.of(u1, u2, u3));
 
         // Lista de nomes de aparelhos eletrônicos
         String[] eletronicDevices = {
