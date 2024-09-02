@@ -5,7 +5,9 @@
 
 # FUNCIONALIDADES
 
-- Integração e funcionalidade HTTP. <br/>
+- Integração com Spring Security. <br/>
+- Integração com JWT. <br/>
+- Integração com requisições HTTP. <br/>
 - Integração com base de dados H2.
 
 # FUTURO
