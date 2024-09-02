@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import com.ecomerce.entities.User;
+import com.ecomerce.entities.UserRole;
 import com.ecomerce.entities.Sale;
 import com.ecomerce.entities.Product;
 import com.ecomerce.repositories.ProductRepository;
@@ -34,16 +35,21 @@ public class DataInitializer implements CommandLineRunner {
 
         // Criando 3 usuários
         User u1 = new User();
-        u1.setUsername("Maria");
+        u1.setUsername("Adelaide");
         u1.setPassword("GatoDePallas");
+        u1.setRole(UserRole.ADMIN);
 
         User u2 = new User();
         u2.setUsername("André");
         u2.setPassword("Marsupial");
+        u1.setRole(UserRole.USER);
+
 
         User u3 = new User();
         u3.setUsername("Marcelo");
         u3.setPassword("Tamandua");
+        u1.setRole(UserRole.USER);
+
 
         userRepository.saveAll(List.of(u1, u2, u3));
 
