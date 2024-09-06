@@ -1,4 +1,5 @@
 # APLICAÇÃO
+
 - Esta aplicação visa simular um sistema de comercio. 🛍️ <br> 
 
 - Esse aplicativo foi feito para um desafio realizado pela Compass UOL em 2 semanas. ⚔
@@ -9,6 +10,10 @@
 - Integração com JWT. 🔑 <br/>
 - Integração com requisições HTTP. 🌎 <br/>
 - Integração com base de dados MySql e H2. 🎲
+
+# UML
+
+![UML E-COMERCE](https://github.com/user-attachments/assets/644710ac-1559-4f78-8743-253d475e9eb4)
 
 # FUTURO
 
