@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecomerce.entities.Product;
 import com.ecomerce.entities.Sale;
+import com.ecomerce.security.PasswordChangeRequest;
 import com.ecomerce.services.ProductService;
 import com.ecomerce.services.SaleService;
+import com.ecomerce.services.UserService;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+	@Autowired
+	UserService userService;
 
 	@Autowired
 	ProductService productService;
@@ -60,5 +65,14 @@ public class UserController {
 		return ResponseEntity.ok(sale);
 	}
 
+	@PostMapping("/change-password")
+	public ResponseEntity<Void> changePassword(@RequestBody PasswordChangeRequest request) {
+		boolean isChanged = userService.changePassword(request.getOldPassword(), request.getNewPassword());
+		if (isChanged) {
+			return ResponseEntity.ok().build();
+		} else {
+			return ResponseEntity.badRequest().build();
+		}
+	}
 	
 }
