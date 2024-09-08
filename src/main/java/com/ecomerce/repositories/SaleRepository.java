@@ -9,5 +9,6 @@ import com.ecomerce.entities.Sale;
 
 @Repository
 public interface SaleRepository extends JpaRepository<Sale, Long> {
+
     List<Sale> findByUserId(Long userId);
 }

@@ -29,17 +29,16 @@ public class ProductService {
 
     public Product putProduct(Long id, Product ProductAtualizado) {
         return productRepository.findById(id)
-            .map(Product -> {
-                Product.setNome(ProductAtualizado.getNome());
-                Product.setPreco(ProductAtualizado.getPreco());
-                Product.setStatus(ProductAtualizado.getStatus());
-                return productRepository.save(Product);
-            }).orElseThrow(() -> new RuntimeException("Product não encontrado"));
+                .map(Product -> {
+                    Product.setName(ProductAtualizado.getName());
+                    Product.setPrice(ProductAtualizado.getPrice());
+                    Product.setStatus(ProductAtualizado.getStatus());
+                    return productRepository.save(Product);
+                }).orElseThrow(() -> new RuntimeException("Product não encontrado"));
     }
 
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
 
- 
 }

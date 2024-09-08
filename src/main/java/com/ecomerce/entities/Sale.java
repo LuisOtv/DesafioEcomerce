@@ -35,9 +35,9 @@ public class Sale {
 
     @ManyToMany
     @JoinTable(
-        name = "id_product",
-        joinColumns = @JoinColumn(name = "sale_id"),
-        inverseJoinColumns = @JoinColumn(name = "product_id")
+            name = "tb_sale_product",
+            joinColumns = @JoinColumn(name = "sale_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private List<Product> products = new ArrayList<>();
 

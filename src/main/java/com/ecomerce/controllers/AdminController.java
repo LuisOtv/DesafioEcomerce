@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,57 +13,72 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ecomerce.dto.RegisterDTO;
 import com.ecomerce.entities.Product;
 import com.ecomerce.entities.User;
+import com.ecomerce.repositories.UserRepository;
 import com.ecomerce.services.ProductService;
-import com.ecomerce.services.UserService;
+
+import jakarta.validation.Valid;
 
 @RequestMapping("/admin")
 @RestController
 public class AdminController {
 
     @Autowired
-    UserService userService;
+    UserRepository userRepository;
 
     @Autowired
     ProductService productService;
 
-    // deletar produto se possível
+    // Deletar produto se possível
     @DeleteMapping("delete-product/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         Optional<Product> optionalProduct = productService.getProduct(id);
         if (optionalProduct.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Erro: Produto com ID " + id + " não encontrado.");
         }
 
         Product product = optionalProduct.get();
         if (!"DISPONÍVEL".equalsIgnoreCase(product.getStatus())) {
-            return ResponseEntity.status(400).body("Produto não está disponível para exclusão");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro: Produto não está disponível para exclusão.");
         }
 
         productService.deleteProduct(id);
-        return ResponseEntity.ok("Produto deletado com sucesso");
+        return ResponseEntity.ok("Produto com ID " + id + " deletado com sucesso.");
     }
 
     // Criar Produtos
     @PostMapping("/add-product")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+    public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
             Product novoProduct = productService.addProduct(product);
-            return new ResponseEntity<>(novoProduct, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Produto criado com sucesso: " + novoProduct.getName());
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao criar produto: " + e.getMessage());
         }
     }
 
     // Criar Usuarios
     @PostMapping("/add-user")
-    public ResponseEntity<User> criarUser(@RequestBody User user) {
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterDTO data) {
+        if (this.userRepository.findByUsername(data.username()) != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Nome de usuário já existente.");
+        }
+
         try {
-            User novoUser = userService.addUser(user);
-            return new ResponseEntity<>(novoUser, HttpStatus.CREATED);
+            String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+            User newUser = new User(data.username(), encryptedPassword, data.role());
+
+            this.userRepository.save(newUser);
+
+            return ResponseEntity.ok("Usuário criado com sucesso!");
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar o usuário: " + e.getMessage());
         }
     }
 }

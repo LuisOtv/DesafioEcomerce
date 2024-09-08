@@ -1,6 +1,7 @@
 package com.ecomerce.security;
 
 public class PasswordChangeRequest {
+
     private String oldPassword;
     private String newPassword;
 

@@ -8,5 +8,6 @@ import com.ecomerce.entities.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
     UserDetails findByUsername(String username);
 }

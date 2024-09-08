@@ -37,23 +37,30 @@ public class SaleService {
     public void confirmSale(List<Long> saleIds) {
         for (Long saleId : saleIds) {
             Sale sale = saleRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Sale não encontrada: " + saleId));
+                    .orElseThrow(() -> new RuntimeException("Sale não encontrada: " + saleId));
 
-             // Remover a relação entre a venda e os produtos
-        for (Product product : sale.getProducts()) {
-            product.setStatus("VENDIDO");
-            productRepository.save(product); // Salvar as alterações na lista de vendas do produto
+            // Remover a relação entre a venda e os produtos
+            for (Product product : sale.getProducts()) {
+                product.setStatus("VENDIDO");
+                productRepository.save(product); // Salvar as alterações na lista de vendas do produto
+            }
+
+            // Deletar a venda
+            saleRepository.delete(sale);
         }
-
-        // Deletar a venda
-        saleRepository.delete(sale);
-    }
     }
 
     public void cancelSale(List<Long> saleIds) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         for (Long saleId : saleIds) {
             Sale sale = saleRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Sale não encontrada: " + saleId));
+                    .orElseThrow(() -> new RuntimeException("Sale não encontrada: " + saleId));
+
+            // Verifica se o usuário autenticado é o mesmo que fez a venda
+            if (!user.getId().equals(sale.getUser().getId())) {
+                throw new RuntimeException("Você não tem permissão para cancelar esta venda: " + saleId);
+            }
 
             // Tornar todos os produtos da venda "DISPONÍVEL"
             for (Product product : sale.getProducts()) {
@@ -65,44 +72,45 @@ public class SaleService {
             saleRepository.delete(sale);
         }
     }
+
     public Sale addProduct(List<Long> productIds, Optional<Long> saleId) {
         Sale sale;
-        
-         // Obter o CustomUserDetails a partir do SecurityContextHolder
-         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Obter o CustomUserDetails a partir do SecurityContextHolder
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // Se o ID da venda for fornecido, buscar a venda existente, caso contrário criar uma nova
         if (saleId.isPresent()) {
             sale = saleRepository.findById(saleId.get())
-                .orElseThrow(() -> new RuntimeException("Sale não encontrada"));
+                    .orElseThrow(() -> new RuntimeException("Sale não encontrada"));
         } else {
             sale = new Sale();
             sale.setUser(user);
             sale.setDate(LocalDateTime.now());
         }
-    
+
         // Primeiro, verificar se algum produto está inativo ou vendido
         for (Long productId : productIds) {
             Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product não encontrado"));
-    
+                    .orElseThrow(() -> new RuntimeException("Product não encontrado"));
+
             if ("INATIVO".equals(product.getStatus()) || "VENDIDO".equals(product.getStatus())) {
-                throw new RuntimeException("Product " + product.getNome() + " já foi vendido e está inativo.");
+                throw new RuntimeException("Product " + product.getName() + " já foi vendido e está inativo.");
             }
         }
-    
+
         // Se todos os produtos estiverem ativos, realizar as mudanças
         for (Long productId : productIds) {
             Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product não encontrado"));
-    
+                    .orElseThrow(() -> new RuntimeException("Product não encontrado"));
+
             product.setStatus("INATIVO"); // Tornando o produto inativo após ser adicionado à venda
             productRepository.save(product);
-    
+
             sale.getProducts().add(product);
         }
-    
+
         return saleRepository.save(sale);
     }
-    
+
 }
