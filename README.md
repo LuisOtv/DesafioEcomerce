@@ -1,6 +1,6 @@
-# APLICAÇÃO
+q# APLICAÇÃO
 
-- Esta aplicação visa simular um sistema de comercio. 🛍️ <br> 
+- Esta aplicação visa simular um sistema de comercio digital. 🛍️ <br> 
 
 - Esse aplicativo foi feito para um desafio realizado pela Compass UOL em 2 semanas. ⚔
 
@@ -9,7 +9,7 @@
 - Integração com Spring Security. 🔐 <br/>
 - Integração com JWT. 🔑 <br/>
 - Integração com requisições HTTP. 🌎 <br/>
-- Integração com base de dados MySql e H2. 🎲
+- Integração com base de dados MariaDB. 🎲
 
 # UML
 
