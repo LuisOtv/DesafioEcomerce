@@ -1,4 +1,4 @@
-q# APLICAÇÃO
+# APLICAÇÃO
 
 - Esta aplicação visa simular um sistema de comercio digital. 🛍️ <br> 
 
