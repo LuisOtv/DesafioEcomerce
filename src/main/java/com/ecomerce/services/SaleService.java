@@ -35,19 +35,27 @@ public class SaleService {
     }
 
     public void confirmSale(List<Long> saleIds) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         for (Long saleId : saleIds) {
             Sale sale = saleRepository.findById(saleId)
                     .orElseThrow(() -> new RuntimeException("Sale não encontrada: " + saleId));
 
-            // Remover a relação entre a venda e os produtos
+            // Verifica se o usuário autenticado é o mesmo que fez a venda
+            if (!user.getId().equals(sale.getUser().getId())) {
+                throw new RuntimeException("Você não tem permissão para terminar esta venda: " + saleId);
+            }
+
+            // Tornar todos os produtos da venda "DISPONÍVEL"
             for (Product product : sale.getProducts()) {
                 product.setStatus("VENDIDO");
-                productRepository.save(product); // Salvar as alterações na lista de vendas do produto
+                productRepository.save(product);
             }
 
             // Deletar a venda
             saleRepository.delete(sale);
         }
+
     }
 
     public void cancelSale(List<Long> saleIds) {

@@ -22,6 +22,8 @@ import com.ecomerce.services.ProductService;
 import com.ecomerce.services.SaleService;
 import com.ecomerce.services.UserService;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -79,6 +81,7 @@ public class UserController {
 
     // Vê a lista de pedidos do usuário logado
     @GetMapping("/sales")
+    @Transactional
     @Cacheable("sales")
     public ResponseEntity<List<Sale>> listSales() {
 
@@ -88,6 +91,7 @@ public class UserController {
             List<Sale> sales = saleService.listSales();
             return ResponseEntity.ok(sales);
         } catch (Exception e) {
+            System.out.println("erro aqui");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }

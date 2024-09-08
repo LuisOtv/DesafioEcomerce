@@ -51,6 +51,9 @@ public class AuthenticationController {
     public ResponseEntity<String> register(@RequestBody @Valid RegisterDTO data) {
         if (this.userRepository.findByUsername(data.username()) != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Nome de usuário já existente.");
+        
+        }else if (data.username().length() < 3) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Nome de usuário deve ter mais de 3 caracteres.");
         }
 
         if (data.password().length() < 8) {
