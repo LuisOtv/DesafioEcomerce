@@ -45,7 +45,6 @@ public class AdminController {
     }
 
     // Criar Produtos
-    @SuppressWarnings("null")
     @PostMapping("/add-product")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         try {
@@ -57,7 +56,6 @@ public class AdminController {
     }
 
     // Criar Usuarios
-    @SuppressWarnings("null")
     @PostMapping("/add-user")
     public ResponseEntity<User> criarUser(@RequestBody User user) {
         try {

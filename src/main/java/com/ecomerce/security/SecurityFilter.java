@@ -1,5 +1,7 @@
 package com.ecomerce.security;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,8 +16,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
@@ -24,8 +24,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
     UserRepository userRepository;
-
-    @SuppressWarnings("null")
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
