@@ -15,8 +15,13 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Product addProduct(Product Product) {
-        return productRepository.save(Product);
+    public Product addProduct(Product product) {
+
+        if (product.getPrice() <= 0) {
+            throw new IllegalArgumentException("O preço do produto deve ser maior que zero.");
+        }
+
+        return productRepository.save(product);
     }
 
     public List<Product> listProducts() {
@@ -27,13 +32,13 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    public Product putProduct(Long id, Product ProductAtualizado) {
+    public Product putProduct(Long id, Product productAtualizado) {
         return productRepository.findById(id)
-                .map(Product -> {
-                    Product.setName(ProductAtualizado.getName());
-                    Product.setPrice(ProductAtualizado.getPrice());
-                    Product.setStatus(ProductAtualizado.getStatus());
-                    return productRepository.save(Product);
+                .map(product -> {
+                    product.setName(productAtualizado.getName());
+                    product.setPrice(productAtualizado.getPrice());
+                    product.setStatus(productAtualizado.getStatus());
+                    return productRepository.save(product);
                 }).orElseThrow(() -> new RuntimeException("Product não encontrado"));
     }
 

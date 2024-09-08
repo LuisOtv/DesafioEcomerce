@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,31 +37,37 @@ public class UserController {
 
     // Confirma Compra
     @PostMapping("/confirm")
+    @CacheEvict(value = {"products", "sales"}, allEntries = true)
     public ResponseEntity<String> confirmSale(@RequestBody List<Long> saleIds) {
         try {
             saleService.confirmSale(saleIds);
             return ResponseEntity.ok("Compra confirmada com sucesso! Obrigado.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erro ao confirmar a compra: " + e.getMessage());
+                    .body("Erro: " + e.getMessage());
         }
     }
 
     // Cancela Compra
     @PostMapping("/cancel")
+    @CacheEvict(value = {"products", "sales"}, allEntries = true)
     public ResponseEntity<String> cancelSale(@RequestBody List<Long> saleIds) {
         try {
             saleService.cancelSale(saleIds);
             return ResponseEntity.ok("Compra cancelada com sucesso! Obrigado.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erro ao cancelar a compra: " + e.getMessage());
+                    .body("Erro: " + e.getMessage());
         }
     }
 
     // Vê a lista de produts disponíveis
     @GetMapping("/products")
+    @Cacheable("products")
     public ResponseEntity<List<Product>> listProducts() {
+
+        System.out.println("add cache - products");
+
         try {
             List<Product> produtos = productService.listProducts();
             return ResponseEntity.ok(produtos);
@@ -71,7 +79,11 @@ public class UserController {
 
     // Vê a lista de pedidos do usuário logado
     @GetMapping("/sales")
+    @Cacheable("sales")
     public ResponseEntity<List<Sale>> listSales() {
+
+        System.out.println("add cache - sales");
+
         try {
             List<Sale> sales = saleService.listSales();
             return ResponseEntity.ok(sales);
@@ -83,6 +95,7 @@ public class UserController {
 
     // Adiciona produtos a uma venda
     @PostMapping("/add-product-to-sale")
+    @CacheEvict(value = {"products", "sales"}, allEntries = true)
     public ResponseEntity<String> addProductToSale(
             @RequestParam(required = false) Long saleId,
             @RequestBody List<Long> productIds) {
@@ -91,7 +104,7 @@ public class UserController {
             return ResponseEntity.ok("Produtos adicionados à venda com sucesso. Venda ID: " + sale.getId());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erro ao adicionar produtos à venda: " + e.getMessage());
+                    .body("Erro: " + e.getMessage());
         }
     }
 
@@ -103,7 +116,7 @@ public class UserController {
             return ResponseEntity.ok("Senha alterada com sucesso!");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Senha antiga está incorreta. Verifique e tente novamente.");
+                    .body("Erro: Senha antiga está incorreta. Verifique e tente novamente.");
         }
     }
 }

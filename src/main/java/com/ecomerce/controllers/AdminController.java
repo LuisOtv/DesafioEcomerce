@@ -3,6 +3,7 @@ package com.ecomerce.controllers;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,6 +34,7 @@ public class AdminController {
 
     // Deletar produto se possível
     @DeleteMapping("delete-product/{id}")
+    @CacheEvict(value = "products", allEntries = true)
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         Optional<Product> optionalProduct = productService.getProduct(id);
         if (optionalProduct.isEmpty()) {
@@ -52,14 +54,18 @@ public class AdminController {
 
     // Criar Produtos
     @PostMapping("/add-product")
+    @CacheEvict(value = "products", allEntries = true)
     public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
             Product novoProduct = productService.addProduct(product);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("Produto criado com sucesso: " + novoProduct.getName());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao criar produto: " + e.getMessage());
+                    .body("Erro: " + e.getMessage());
         }
     }
 
@@ -70,6 +76,11 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Nome de usuário já existente.");
         }
 
+        if (data.password().length() < 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro: A senha deve ter no mínimo 8 caracteres.");
+        }
+
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
             User newUser = new User(data.username(), encryptedPassword, data.role());
@@ -78,7 +89,7 @@ public class AdminController {
 
             return ResponseEntity.ok("Usuário criado com sucesso!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar o usuário: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro: " + e.getMessage());
         }
     }
 }

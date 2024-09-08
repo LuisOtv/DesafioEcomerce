@@ -42,7 +42,7 @@ public class AuthenticationController {
 
             return ResponseEntity.ok("Usuário logado com sucesso!\nToken de Acesso: " + token);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Erro de autenticação: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Erro: " + e.getMessage());
         }
     }
 
@@ -53,6 +53,11 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Nome de usuário já existente.");
         }
 
+        if (data.password().length() < 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro: A senha deve ter no mínimo 8 caracteres.");
+        }
+
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
             User newUser = new User(data.username(), encryptedPassword, data.role());
@@ -61,7 +66,7 @@ public class AuthenticationController {
 
             return ResponseEntity.ok("Usuário criado com sucesso!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar o usuário: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro: " + e.getMessage());
         }
     }
 }
