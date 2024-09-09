@@ -6,10 +6,12 @@
 
 # FUNCIONALIDADES
 
+- Sistema de Register, Login e Change Password <br/>
 - Integração com Spring Security. 🔐 <br/>
 - Integração com JWT. 🔑 <br/>
 - Integração com requisições HTTP. 🌎 <br/>
-- Integração com base de dados MariaDB. 🎲
+- Integração com base de dados MariaDB. 🎲 <br/>
+- Integração com Spring Cache. ⌛
 
 # UML
 
